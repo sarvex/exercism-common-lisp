@@ -1,5 +1,5 @@
 ---
-title: Out of sync practice exercises
+title: Out of sync practice exercises - new one.
 ---
 
 Out of sync practice exercises have been detected:
