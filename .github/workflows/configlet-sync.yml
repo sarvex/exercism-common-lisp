@@ -33,3 +33,4 @@ jobs:
       with:
         filename: .github/configlet-sync-issue.md
         update_existing: true
+        search_existing: all
