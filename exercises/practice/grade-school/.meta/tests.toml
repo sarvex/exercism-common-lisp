@@ -73,11 +73,3 @@ description = "Grade is empty if no students in that grade"
 [2bfc697c-adf2-4b65-8d0f-c46e085f796e]
 description = "Student not added to same grade more than once"
 
-[66c8e141-68ab-4a04-a15a-c28bc07fe6b9]
-description = "Student not added to multiple grades"
-
-[c9c1fc2f-42e0-4d2c-b361-99271f03eda7]
-description = "Student not added to other grade for multiple grades"
-
-[1bfbcef1-e4a3-49e8-8d22-f6f9f386187e]
-description = "Students are sorted by name in a grade"
