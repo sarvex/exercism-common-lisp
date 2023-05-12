@@ -7,7 +7,7 @@ def find_common_lisp_main():
     up_one = os.path.split(os.getcwd())[0]
     return ".." if os.path.split(up_one)[1] == "common-lisp" else "."
 
-TARGET = os.path.abspath(find_common_lisp_main() + "/exercises/practice")
+TARGET = os.path.abspath(f"{find_common_lisp_main()}/exercises/practice")
 
 
 def create_directory_structure(exercise_name):
@@ -159,9 +159,9 @@ def create_test(cases, exercise_name, fnd = dict()):
             return string
         elif (partitioned := string.partition("-"))[2]:
             if '-' in partitioned[2] or partitioned[2][-1] == 'p':
-                return partitioned[2] + "-p"
+                return f"{partitioned[2]}-p"
             else:
-                return partitioned[2] + "p"
+                return f"{partitioned[2]}p"
         else:
             return partitioned[0] + ("-p" if 'p' == partitioned[0][-1] else "p")
 
@@ -203,7 +203,7 @@ def create_test_string(desc, args, expected, exercise, func_name, func_params):
         close_paren = ""
     else:
         equality = ""
-        if isinstance(expected, int) or isinstance(expected, float):
+        if isinstance(expected, (int, float)):
             equality = "="
         elif isinstance(expected, str) and len(expected) == 1:
             equality = "char="
@@ -241,7 +241,7 @@ def create_example_and_solution_files(exercise_name, func_name_dict):
     Precondition: func_name_dict is a dictionary.
     """
     # Create keywords of function names to be exported (vertically aligned)
-    exports_string = ("\n" + " " * 11).join([":" + k for k in func_name_dict])
+    exports_string = ("\n" + " " * 11).join([f":{k}" for k in func_name_dict])
 
     # Boilerplate code.  Multiline docstring format used to maintain
     # correct indentation and to increase readability.
@@ -352,7 +352,7 @@ def lispify(value, string_to_keyword = False):
         return "(" + " ".join(["list"] + [lispify(v) for v in value]) + ")"
     elif isinstance(value, bool):
         return "T" if value else "NIL"
-    elif isinstance(value, int) or isinstance(value, float):
+    elif isinstance(value, (int, float)):
         return str(value)
     elif isinstance(value, str):
         if len(value) == 1:
@@ -369,13 +369,15 @@ def lispify(value, string_to_keyword = False):
     elif value is None:
         return "NIL"
     else:
-        raise TypeError("lispify function does not know how to handle value of type: " + str(type(value)))
+        raise TypeError(
+            f"lispify function does not know how to handle value of type: {str(type(value))}"
+        )
 
 
 def clean_lispification(lispified):
     listless = lispified.replace(" '(", " (").replace("(list ", "(").replace("(list", "(")
     if listless[0] == '(':
-        listless = "'" + listless
+        listless = f"'{listless}"
     return listless
 
 
@@ -383,27 +385,28 @@ def no_arguments():
     exercise_name = None
     prob_spec = None
 
-    while prob_spec == None or not os.path.exists(f"{prob_spec}/exercises"):
+    while prob_spec is None or not os.path.exists(f"{prob_spec}/exercises"):
         fp = input("Enter the path (relative or absolute) to the problem-specifications repository: ")
         prob_spec = os.path.abspath(fp)
 
     top_loop = True
     while top_loop:
-        while exercise_name == None or not os.path.exists(f"{prob_spec}/exercises/{exercise_name}"):
+        while exercise_name is None or not os.path.exists(
+            f"{prob_spec}/exercises/{exercise_name}"
+        ):
             exercise_name = input("Enter the name of the exercise you wish to generate: ")
-        if os.path.exists(f"{TARGET}/{exercise_name}"):
-            while True:
-                confirmation = input("You are about to overwrite an existing exercise!  Confirm (Y/N): ")
-                confirmation = confirmation.upper()
-                if confirmation == "Y" or confirmation == "YES":
-                    top_loop = False
-                    break
-                elif confirmation == "N" or confirmation == "NO":
-                    exercise_name = None
-                    break
-        else:
+        if not os.path.exists(f"{TARGET}/{exercise_name}"):
             break
 
+        while True:
+            confirmation = input("You are about to overwrite an existing exercise!  Confirm (Y/N): ")
+            confirmation = confirmation.upper()
+            if confirmation in ["Y", "YES"]:
+                top_loop = False
+                break
+            elif confirmation in ["N", "NO"]:
+                exercise_name = None
+                break
     author = input("Author's Github handle: ")
 
     prob_spec_exercise = f"{prob_spec}/exercises/{exercise_name}"
@@ -459,7 +462,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    arg_states = [args.Path == None, args.Exercise == None, args.Author == None]
+    arg_states = [args.Path is None, args.Exercise is None, args.Author is None]
 
     if all(arg_states):
         no_arguments()

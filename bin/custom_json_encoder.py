@@ -15,15 +15,8 @@ class CustomJSONEncoder(json.JSONEncoder):
     ## json.JSONEncoder class, but all to call the customized
     ## _make_iterencode function
     def iterencode(self, o, _one_shot=False):
-        if self.check_circular:
-            markers = {}
-        else:
-            markers = None
-        if self.ensure_ascii:
-            _encoder = encode_basestring_ascii
-        else:
-            _encoder = encode_basestring
-
+        markers = {} if self.check_circular else None
+        _encoder = encode_basestring_ascii if self.ensure_ascii else encode_basestring
         def floatstr(o, allow_nan=self.allow_nan,
                 _repr=float.__repr__, _inf=INFINITY, _neginf=-INFINITY):
             # Check for specials.  Note that this type of test is processor
@@ -101,11 +94,11 @@ def _make_iterencode(markers, _default, _encoder, _indent, _floatstr,
             if isinstance(value, str):
                 yield buf + _encoder(value)
             elif value is None:
-                yield buf + 'null'
+                yield f'{buf}null'
             elif value is True:
-                yield buf + 'true'
+                yield f'{buf}true'
             elif value is False:
-                yield buf + 'false'
+                yield f'{buf}false'
             elif isinstance(value, int):
                 # Subclasses of int/float may override __repr__, but we still
                 # want to encode them as integers/floats in JSON. One example
@@ -146,10 +139,7 @@ def _make_iterencode(markers, _default, _encoder, _indent, _floatstr,
             newline_indent = None
             item_separator = _item_separator
         first = True
-        if _sort_keys:
-            items = sorted(dct.items())
-        else:
-            items = dct.items()
+        items = sorted(dct.items()) if _sort_keys else dct.items()
         for key, value in items:
             if isinstance(key, str):
                 pass
@@ -236,4 +226,5 @@ def _make_iterencode(markers, _default, _encoder, _indent, _floatstr,
             yield from _iterencode(o, _current_indent_level)
             if markers is not None:
                 del markers[markerid]
+
     return _iterencode
